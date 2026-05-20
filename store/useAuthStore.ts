@@ -5,6 +5,8 @@ export interface AuthUser {
   userId: string;
   name: string;
   email: string;
+  plan: "FREE" | "PRO";
+  pictureUrl?: string | null;
 }
 
 interface AuthState {
@@ -13,6 +15,7 @@ interface AuthState {
   setAuth: (token: string, user: AuthUser) => void;
   logout: () => void;
   isAuthenticated: () => boolean;
+  isPro: () => boolean;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -26,10 +29,11 @@ export const useAuthStore = create<AuthState>()(
       logout: () => set({ token: null, user: null }),
 
       isAuthenticated: () => !!get().token && !!get().user,
+
+      isPro: () => get().user?.plan === "PRO",
     }),
     {
       name: "rf-auth",
-      // Only persist token + user, not functions
       partialize: (state) => ({ token: state.token, user: state.user }),
     }
   )

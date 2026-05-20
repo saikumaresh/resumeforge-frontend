@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, Inter, JetBrains_Mono } from "next/font/google";
+import GoogleProvider from "@/components/providers/GoogleProvider";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -39,7 +40,9 @@ export default function RootLayout({
       lang="en"
       className={`${dmSans.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        <GoogleProvider>{children}</GoogleProvider>
+      </body>
     </html>
   );
 }

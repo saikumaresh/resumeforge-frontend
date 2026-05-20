@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Plus, Zap, LogOut, User } from "lucide-react";
+import { Plus, Zap, LogOut, User, Crown } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 
 const navItems = [
@@ -12,7 +12,8 @@ const navItems = [
 export default function Navbar() {
   const pathname  = usePathname();
   const router    = useRouter();
-  const { user, logout } = useAuthStore();
+  const { user, logout, isPro } = useAuthStore();
+  const isProUser = isPro();
 
   const handleLogout = () => {
     logout();
@@ -68,6 +69,33 @@ export default function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-2">
+          {/* Upgrade to PRO (only for free users) */}
+          {user && !isProUser && (
+            <Link
+              href="/upgrade"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 hover:opacity-90"
+              style={{
+                background: "rgba(16,185,129,0.08)",
+                color: "#10B981",
+                border: "1px solid rgba(16,185,129,0.2)",
+                fontFamily: "var(--font-heading)",
+              }}
+            >
+              <Crown className="h-3.5 w-3.5" />
+              Upgrade
+            </Link>
+          )}
+
+          {/* PRO badge */}
+          {user && isProUser && (
+            <span
+              className="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold"
+              style={{ background: "rgba(16,185,129,0.12)", color: "#10B981", border: "1px solid rgba(16,185,129,0.2)" }}
+            >
+              <Crown className="h-3 w-3" /> PRO
+            </span>
+          )}
+
           {/* New Application CTA */}
           <Link
             href="/apply/new"

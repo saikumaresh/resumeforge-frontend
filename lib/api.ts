@@ -28,20 +28,51 @@ api.interceptors.request.use((config) => {
 // Kept for legacy fallback — pages now prefer useAuthStore().user?.userId
 export const TEST_USER_ID = "550e8400-e29b-41d4-a716-446655440000";
 
+// ── Auth types ───────────────────────────────────────────────────
+export interface AuthApiResponse {
+  token: string;
+  userId: string;
+  name: string;
+  email: string;
+  plan: "FREE" | "PRO";
+  pictureUrl?: string | null;
+}
+
 // ── Auth ─────────────────────────────────────────────────────────
 export const register = async (payload: { name: string; email: string; password: string }) => {
   const { data } = await api.post("/api/v1/auth/register", payload);
-  return data as { token: string; userId: string; name: string; email: string };
+  return data as AuthApiResponse;
 };
 
 export const login = async (payload: { email: string; password: string }) => {
   const { data } = await api.post("/api/v1/auth/login", payload);
-  return data as { token: string; userId: string; name: string; email: string };
+  return data as AuthApiResponse;
 };
 
 export const getMe = async () => {
   const { data } = await api.get("/api/v1/auth/me");
-  return data as { token: string; userId: string; name: string; email: string };
+  return data as AuthApiResponse;
+};
+
+/** Google Sign-In — send Google credential (id_token) to backend */
+export const googleAuth = async (idToken: string) => {
+  const { data } = await api.post("/api/v1/auth/google", { idToken });
+  return data as AuthApiResponse;
+};
+
+// ── Payments (Razorpay) ──────────────────────────────────────────
+export const createRazorpayOrder = async () => {
+  const { data } = await api.post("/api/v1/payments/create-order");
+  return data as { orderId: string; amount: number; currency: string; keyId: string };
+};
+
+export const verifyRazorpayPayment = async (payload: {
+  razorpayOrderId: string;
+  razorpayPaymentId: string;
+  razorpaySignature: string;
+}) => {
+  const { data } = await api.post("/api/v1/payments/verify", payload);
+  return data as { status: string; plan: string };
 };
 
 // ── Master Resume ────────────────────────────────────────────────
