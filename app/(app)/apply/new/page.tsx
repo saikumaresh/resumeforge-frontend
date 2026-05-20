@@ -3,9 +3,10 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, AlertTriangle, ArrowRight, Loader2 } from "lucide-react";
-import { getMasterResume, tailorResume, pollTailoredResume, TEST_USER_ID } from "@/lib/api";
+import { getMasterResume, tailorResume, pollTailoredResume } from "@/lib/api";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useAppStore } from "@/store/useAppStore";
+import Link from "next/link";
 
 /* ── Form Input ──────────────────────────────────────────────── */
 function FormInput({
@@ -150,7 +151,7 @@ export default function NewApplicationPage() {
   const router = useRouter();
   const { masterResume, setMasterResume, setCurrentJob } = useAppStore();
   const { user } = useAuthStore();
-  const userId = user?.userId ?? TEST_USER_ID;
+  const userId = user?.userId ?? "";
 
   const [form, setForm] = useState({ companyName: "", jobTitle: "", jobDescription: "", requiredSkills: "" });
   const [hasMaster, setHasMaster] = useState(false);
@@ -187,11 +188,17 @@ export default function NewApplicationPage() {
       clearInterval(progressInterval);
       setProgress(100);
       setTimeout(() => router.push(`/apply/${result.id}`), 300);
-    } catch {
+    } catch (err: unknown) {
       clearInterval(progressInterval);
       setTailoring(false);
       setProgress(0);
-      setError("Tailoring failed. Please try again.");
+      const status = (err as { response?: { status?: number; data?: { message?: string } } })?.response?.status;
+      if (status === 402) {
+        // FREE plan limit reached — show upgrade prompt
+        setError("UPGRADE_REQUIRED");
+      } else {
+        setError("Tailoring failed. Please try again.");
+      }
     }
   };
 
@@ -280,9 +287,9 @@ export default function NewApplicationPage() {
           />
         </div>
 
-        {/* Error */}
+        {/* Error / Upgrade prompt */}
         <AnimatePresence>
-          {error && (
+          {error && error !== "UPGRADE_REQUIRED" && (
             <motion.p
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
@@ -291,6 +298,30 @@ export default function NewApplicationPage() {
             >
               {error}
             </motion.p>
+          )}
+          {error === "UPGRADE_REQUIRED" && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-3 p-4 rounded-lg flex items-start gap-3"
+              style={{ background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.2)" }}
+            >
+              <span className="text-lg">🚀</span>
+              <div>
+                <p className="text-sm font-semibold text-[#FAFAFA]">Free plan limit reached</p>
+                <p className="text-xs text-[#71717A] mt-0.5 mb-2">
+                  You&apos;ve used all 5 free applications this month. Upgrade to PRO for unlimited tailoring.
+                </p>
+                <Link
+                  href="/upgrade"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:opacity-90"
+                  style={{ background: "#10B981", color: "#0C0C0E" }}
+                >
+                  Upgrade to PRO →
+                </Link>
+              </div>
+            </motion.div>
           )}
         </AnimatePresence>
 

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Save, Loader2, CheckCircle2, PlusCircle, Trash2, BookOpen, Paperclip, FileText,
 } from "lucide-react";
-import { getMasterResume, createMasterResume, updateMasterResume, TEST_USER_ID } from "@/lib/api";
+import { getMasterResume, createMasterResume, updateMasterResume } from "@/lib/api";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useAppStore } from "@/store/useAppStore";
 import { formatDate } from "@/lib/utils";
@@ -53,7 +53,7 @@ function TabButton({ active, onClick, icon: Icon, label, count }: {
 export default function ResumePage() {
   const { masterResume, setMasterResume } = useAppStore();
   const { user } = useAuthStore();
-  const userId = user?.userId ?? TEST_USER_ID;
+  const userId = user?.userId ?? "";
   const [content, setContent] = useState(masterResume?.content ?? "");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);

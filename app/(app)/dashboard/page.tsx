@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Plus, AlertCircle, Zap, ArrowRight } from "lucide-react";
-import { getUserTailoredResumes, TEST_USER_ID } from "@/lib/api";
+import { getUserTailoredResumes } from "@/lib/api";
 import { TailoredResume } from "@/types";
 import { getScoreLabel, formatDate } from "@/lib/utils";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -168,7 +168,7 @@ function EmptyState() {
 /* ── Page ───────────────────────────────────────────────────── */
 export default function DashboardPage() {
   const { user } = useAuthStore();
-  const userId = user?.userId ?? TEST_USER_ID;
+  const userId = user?.userId ?? "";
 
   const [resumes, setResumes] = useState<TailoredResume[]>([]);
   const [loading, setLoading] = useState(true);
