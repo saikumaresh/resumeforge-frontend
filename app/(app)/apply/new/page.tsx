@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, AlertTriangle, ArrowRight, Loader2 } from "lucide-react";
 import { getMasterResume, tailorResume, pollTailoredResume, TEST_USER_ID } from "@/lib/api";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useAppStore } from "@/store/useAppStore";
 
 /* ── Form Input ──────────────────────────────────────────────── */
@@ -148,6 +149,8 @@ function ProcessingScreen({ company, jobTitle, progress }: {
 export default function NewApplicationPage() {
   const router = useRouter();
   const { masterResume, setMasterResume, setCurrentJob } = useAppStore();
+  const { user } = useAuthStore();
+  const userId = user?.userId ?? TEST_USER_ID;
 
   const [form, setForm] = useState({ companyName: "", jobTitle: "", jobDescription: "", requiredSkills: "" });
   const [hasMaster, setHasMaster] = useState(false);
@@ -157,7 +160,7 @@ export default function NewApplicationPage() {
 
   useEffect(() => {
     if (masterResume) { setHasMaster(true); return; }
-    getMasterResume(TEST_USER_ID)
+    getMasterResume(userId)
       .then((data) => { setMasterResume(data); setHasMaster(!!data); })
       .catch(() => setHasMaster(false));
   }, [masterResume, setMasterResume]);
@@ -176,7 +179,7 @@ export default function NewApplicationPage() {
 
     try {
       setCurrentJob(form.companyName, form.jobTitle);
-      const result = await tailorResume(masterResume.id, { userId: TEST_USER_ID, ...form });
+      const result = await tailorResume(masterResume.id, { userId, ...form });
       setProgress(90);
       await pollTailoredResume(result.id, (status) => {
         if (status === "PROCESSING") setProgress(95);

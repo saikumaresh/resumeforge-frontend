@@ -6,6 +6,7 @@ import { Plus, AlertCircle, Zap, ArrowRight } from "lucide-react";
 import { getUserTailoredResumes, TEST_USER_ID } from "@/lib/api";
 import { TailoredResume } from "@/types";
 import { getScoreLabel, formatDate } from "@/lib/utils";
+import { useAuthStore } from "@/store/useAuthStore";
 
 /* ── Score dot ──────────────────────────────────────────────── */
 function ScoreDot({ score }: { score: number }) {
@@ -166,20 +167,23 @@ function EmptyState() {
 
 /* ── Page ───────────────────────────────────────────────────── */
 export default function DashboardPage() {
+  const { user } = useAuthStore();
+  const userId = user?.userId ?? TEST_USER_ID;
+
   const [resumes, setResumes] = useState<TailoredResume[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const fetchResumes = useCallback(async () => {
     try {
-      const data = await getUserTailoredResumes(TEST_USER_ID);
+      const data = await getUserTailoredResumes(userId);
       setResumes(data);
     } catch {
       setError("Could not load applications");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [userId]);
 
   useEffect(() => { fetchResumes(); }, [fetchResumes]);
 

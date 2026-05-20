@@ -1,15 +1,25 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Plus, Zap } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Plus, Zap, LogOut, User } from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard" },
-  { href: "/resume", label: "My Resume" },
+  { href: "/resume",    label: "My Resume"  },
 ];
 
 export default function Navbar() {
-  const pathname = usePathname();
+  const pathname  = usePathname();
+  const router    = useRouter();
+  const { user, logout } = useAuthStore();
+
+  const handleLogout = () => {
+    logout();
+    // Clear the cookie middleware reads
+    document.cookie = "rf-auth-token=; path=/; max-age=0; SameSite=Lax";
+    router.push("/login");
+  };
 
   return (
     <header
@@ -56,19 +66,39 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* CTA */}
-        <Link
-          href="/apply/new"
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-semibold transition-all duration-150 hover:opacity-90 active:scale-95"
-          style={{
-            background: "#10B981",
-            color: "#0C0C0E",
-            fontFamily: "var(--font-heading)",
-          }}
-        >
-          <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
-          New Application
-        </Link>
+        {/* Right side */}
+        <div className="flex items-center gap-2">
+          {/* New Application CTA */}
+          <Link
+            href="/apply/new"
+            className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-semibold transition-all duration-150 hover:opacity-90 active:scale-95"
+            style={{ background: "#10B981", color: "#0C0C0E", fontFamily: "var(--font-heading)" }}
+          >
+            <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
+            New Application
+          </Link>
+
+          {/* User avatar + logout */}
+          {user && (
+            <div className="flex items-center gap-1">
+              <div
+                className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold"
+                title={user.email}
+                style={{ background: "rgba(16,185,129,0.12)", color: "#10B981", border: "1px solid rgba(16,185,129,0.2)" }}
+              >
+                {user.name?.[0]?.toUpperCase() ?? <User className="h-3.5 w-3.5" />}
+              </div>
+              <button
+                onClick={handleLogout}
+                title="Sign out"
+                className="h-8 w-8 rounded-full flex items-center justify-center transition-colors duration-150 hover:bg-white/5"
+                style={{ color: "#52525B" }}
+              >
+                <LogOut className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

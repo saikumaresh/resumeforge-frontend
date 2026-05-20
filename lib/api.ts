@@ -7,15 +7,47 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// Hardcoded test user for now (until auth is built)
+// Attach JWT to every request if present in localStorage
+api.interceptors.request.use((config) => {
+  if (typeof window !== "undefined") {
+    try {
+      const stored = localStorage.getItem("rf-auth");
+      if (stored) {
+        const { state } = JSON.parse(stored) as { state: { token?: string } };
+        if (state?.token) {
+          config.headers.Authorization = `Bearer ${state.token}`;
+        }
+      }
+    } catch {
+      // ignore parse errors
+    }
+  }
+  return config;
+});
+
+// Kept for legacy fallback — pages now prefer useAuthStore().user?.userId
 export const TEST_USER_ID = "550e8400-e29b-41d4-a716-446655440000";
+
+// ── Auth ─────────────────────────────────────────────────────────
+export const register = async (payload: { name: string; email: string; password: string }) => {
+  const { data } = await api.post("/api/v1/auth/register", payload);
+  return data as { token: string; userId: string; name: string; email: string };
+};
+
+export const login = async (payload: { email: string; password: string }) => {
+  const { data } = await api.post("/api/v1/auth/login", payload);
+  return data as { token: string; userId: string; name: string; email: string };
+};
+
+export const getMe = async () => {
+  const { data } = await api.get("/api/v1/auth/me");
+  return data as { token: string; userId: string; name: string; email: string };
+};
 
 // ── Master Resume ────────────────────────────────────────────────
 export const getMasterResume = async (userId: string) => {
-  // Returns first master resume or null
   try {
     const { data } = await api.get(`/api/v1/resumes/users/${userId}/master/first`);
-    // Assemble plain-text content from sections
     if (data.sections?.length > 0) {
       data.content = data.sections.map((s: { content: string }) => s.content).join("\n\n");
     }
@@ -49,10 +81,12 @@ export const tailorResume = async (
     requiredSkills?: string;
   }
 ) => {
-  const { data } = await api.post(
-    `/api/v1/resumes/${masterResumeId}/tailor`,
-    payload
-  );
+  const { data } = await api.post(`/api/v1/resumes/${masterResumeId}/tailor`, payload);
+  return data;
+};
+
+export const retryTailoring = async (tailoredId: string) => {
+  const { data } = await api.post(`/api/v1/resumes/tailored/${tailoredId}/retry`);
   return data;
 };
 
@@ -63,11 +97,6 @@ export const getTailoredResume = async (tailoredId: string) => {
 
 export const getUserTailoredResumes = async (userId: string) => {
   const { data } = await api.get(`/api/v1/resumes/users/${userId}/tailored`);
-  return data;
-};
-
-export const retryTailoring = async (tailoredId: string) => {
-  const { data } = await api.post(`/api/v1/resumes/tailored/${tailoredId}/retry`);
   return data;
 };
 
@@ -94,10 +123,7 @@ export const chatWithResume = async (
   suggestedSection?: string;
   suggestedContent?: string;
 }> => {
-  const { data } = await api.post(
-    `/api/v1/resumes/tailored/${tailoredId}/chat`,
-    payload
-  );
+  const { data } = await api.post(`/api/v1/resumes/tailored/${tailoredId}/chat`, payload);
   return data;
 };
 
@@ -110,9 +136,7 @@ export const pollTailoredResume = async (
     await new Promise((r) => setTimeout(r, 5000));
     const data = await getTailoredResume(tailoredId);
     onUpdate(data.status, data);
-    if (data.status === "COMPLETED" || data.status === "FAILED") {
-      return data;
-    }
+    if (data.status === "COMPLETED" || data.status === "FAILED") return data;
   }
   throw new Error("Tailoring timed out");
 };

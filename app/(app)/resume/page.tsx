@@ -5,6 +5,7 @@ import {
   Save, Loader2, CheckCircle2, PlusCircle, Trash2, BookOpen, Paperclip, FileText,
 } from "lucide-react";
 import { getMasterResume, createMasterResume, updateMasterResume, TEST_USER_ID } from "@/lib/api";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useAppStore } from "@/store/useAppStore";
 import { formatDate } from "@/lib/utils";
 
@@ -51,6 +52,8 @@ function TabButton({ active, onClick, icon: Icon, label, count }: {
 /* ── Main Page ───────────────────────────────────────────────── */
 export default function ResumePage() {
   const { masterResume, setMasterResume } = useAppStore();
+  const { user } = useAuthStore();
+  const userId = user?.userId ?? TEST_USER_ID;
   const [content, setContent] = useState(masterResume?.content ?? "");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -70,7 +73,7 @@ export default function ResumePage() {
 
   useEffect(() => {
     if (masterResume) { setContent(masterResume.content); setLoading(false); return; }
-    getMasterResume(TEST_USER_ID)
+    getMasterResume(userId)
       .then((data) => { setMasterResume(data); setContent(data?.content ?? ""); })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -85,8 +88,8 @@ export default function ResumePage() {
     setSaving(true);
     try {
       const data = masterResume
-        ? await updateMasterResume(TEST_USER_ID, content)
-        : await createMasterResume(TEST_USER_ID, content);
+        ? await updateMasterResume(userId, content)
+        : await createMasterResume(userId, content);
       setMasterResume(data);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
