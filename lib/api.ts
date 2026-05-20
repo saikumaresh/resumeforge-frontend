@@ -25,9 +25,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Kept for legacy fallback — pages now prefer useAuthStore().user?.userId
-export const TEST_USER_ID = "550e8400-e29b-41d4-a716-446655440000";
-
 // ── Auth types ───────────────────────────────────────────────────
 export interface AuthApiResponse {
   token: string;
