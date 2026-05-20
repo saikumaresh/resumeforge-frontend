@@ -1,26 +1,237 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-heading: var(--font-heading);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  /* Palette A — Studio tokens */
+  --color-canvas: #0C0C0E;
+  --color-surface: #131316;
+  --color-elevated: #1C1C1F;
+  --color-accent-emerald: #10B981;
+  --color-accent-soft: #6EE7B7;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ── Palette A — Studio (always dark) ───────────────────────── */
+:root {
+  --background: #0C0C0E;
+  --foreground: #FAFAFA;
+  --card: #131316;
+  --card-foreground: #FAFAFA;
+  --popover: #1C1C1F;
+  --popover-foreground: #FAFAFA;
+  --primary: #10B981;
+  --primary-foreground: #0C0C0E;
+  --secondary: #1C1C1F;
+  --secondary-foreground: #A1A1AA;
+  --muted: #18181B;
+  --muted-foreground: #71717A;
+  --accent: #1C1C1F;
+  --accent-foreground: #10B981;
+  --destructive: #EF4444;
+  --border: rgba(255, 255, 255, 0.07);
+  --input: rgba(255, 255, 255, 0.05);
+  --ring: rgba(16, 185, 129, 0.35);
+  --radius: 0.5rem;
+  --chart-1: #10B981;
+  --chart-2: #6EE7B7;
+  --chart-3: #34D399;
+  --chart-4: #059669;
+  --chart-5: #047857;
+  --sidebar: #131316;
+  --sidebar-foreground: #FAFAFA;
+  --sidebar-primary: #10B981;
+  --sidebar-primary-foreground: #0C0C0E;
+  --sidebar-accent: #1C1C1F;
+  --sidebar-accent-foreground: #10B981;
+  --sidebar-border: rgba(255, 255, 255, 0.06);
+  --sidebar-ring: rgba(16, 185, 129, 0.35);
+}
+
+/* ── Base Styles ─────────────────────────────────────────────── */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #0C0C0E;
+    color: #FAFAFA;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.18);
+  }
+
+  ::selection {
+    background: rgba(16, 185, 129, 0.2);
+    color: #FAFAFA;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ── Utility classes ─────────────────────────────────────────── */
+@layer utilities {
+  .glass {
+    background: rgba(12, 12, 14, 0.88);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+  }
+
+  .surface {
+    background: #131316;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .surface-raised {
+    background: #1C1C1F;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* Accent utilities */
+  .accent-text { color: #10B981; }
+  .accent-bg { background: rgba(16, 185, 129, 0.1); }
+  .accent-border { border-color: rgba(16, 185, 129, 0.25); }
+}
+
+/* ── Skeleton shimmer ────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(28, 28, 31, 0.9) 25%,
+    rgba(36, 36, 40, 0.9) 50%,
+    rgba(28, 28, 31, 0.9) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+  border-radius: var(--radius);
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* ── Input color scheme ──────────────────────────────────────── */
+input, textarea {
+  color-scheme: dark;
+}
+
+/* ── Print styles ────────────────────────────────────────────── */
+@media print {
+  /* Hide everything that isn't the resume */
+  .no-print,
+  nav,
+  aside,
+  header { display: none !important; }
+
+  body {
+    background: white !important;
+    color: #111 !important;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+  }
+
+  /* Reset all dark-mode backgrounds */
+  * {
+    box-shadow: none !important;
+    background: transparent !important;
+    border-color: #e5e7eb !important;
+    color: #111 !important;
+  }
+
+  /* Resume container */
+  .print-resume-container {
+    display: block !important;
+    padding: 0.5in;
+    gap: 0 !important;
+  }
+
+  /* Each section card */
+  .print-resume-section {
+    border: none !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    border-radius: 0 !important;
+    margin-bottom: 1rem !important;
+    padding: 0.5rem 0 !important;
+    page-break-inside: avoid;
+  }
+
+  /* Show the print-only label */
+  .print-label { display: block !important; }
+
+  /* Section content typography */
+  .section-content {
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 11px !important;
+    line-height: 1.75 !important;
+    color: #111 !important;
+    white-space: pre-wrap !important;
+  }
+
+  /* Section label */
+  .section-label {
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    color: #6b7280 !important;
+  }
 }
