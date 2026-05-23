@@ -134,7 +134,7 @@ export const updateTailoredSections = async (
 ) => {
   const { data } = await api.put(
     `/api/v1/resumes/tailored/${tailoredId}/sections`,
-    { sections }
+    sections
   );
   return data;
 };

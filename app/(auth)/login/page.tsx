@@ -3,7 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { Loader2, Eye, EyeOff, Chrome } from "lucide-react";
+import { Loader2, Eye, EyeOff, Globe } from "lucide-react";
 import { login } from "@/lib/api";
 import { useAuthStore } from "@/store/useAuthStore";
 import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
@@ -128,7 +128,7 @@ export default function LoginPage() {
               className="flex items-start gap-2.5 px-3 py-2.5 rounded-lg"
               style={{ background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.2)" }}
             >
-              <Chrome className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: "#10B981" }} />
+              <Globe className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: "#10B981" }} />
               <div>
                 <p className="text-xs font-semibold text-[#FAFAFA]">This account uses Google sign-in</p>
                 <p className="text-[11px] text-[#71717A] mt-0.5">

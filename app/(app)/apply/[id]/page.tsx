@@ -246,13 +246,7 @@ export default function ApplicationDetailPage() {
   };
 
   // ── PDF export ────────────────────────────────────────────────
-  const handleExportPDF = () => {
-    if (resume?.pdfDownloadUrl) {
-      window.open(`http://localhost:8081${resume.pdfDownloadUrl}`, "_blank");
-    } else {
-      window.print();
-    }
-  };
+  const handleExportPDF = () => window.print();
 
   if (loading) {
     return (

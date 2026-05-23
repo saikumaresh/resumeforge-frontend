@@ -1,5 +1,5 @@
 "use client";
-import { useGoogleLogin, GoogleLogin } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { googleAuth } from "@/lib/api";
@@ -62,16 +62,26 @@ export default function GoogleSignInButton({ onSuccess, onError, label = "Contin
   };
 
   return (
-    <GoogleLogin
-      onSuccess={handleCredentialResponse}
-      onError={() => onError?.("Google sign-in was cancelled or failed.")}
-      useOneTap={false}
-      theme="filled_black"
-      size="large"
-      width="100%"
-      text={label === "Continue with Google" ? "continue_with" : "signup_with"}
-      shape="rectangular"
-    />
+    <div className="relative">
+      <GoogleLogin
+        onSuccess={handleCredentialResponse}
+        onError={() => onError?.("Google sign-in was cancelled or failed.")}
+        useOneTap={false}
+        theme="filled_black"
+        size="large"
+        width="100%"
+        text={label === "Continue with Google" ? "continue_with" : "signup_with"}
+        shape="rectangular"
+      />
+      {loading && (
+        <div
+          className="absolute inset-0 flex items-center justify-center rounded-lg"
+          style={{ background: "rgba(12,12,14,0.7)" }}
+        >
+          <Loader2 className="h-4 w-4 animate-spin" style={{ color: "#10B981" }} />
+        </div>
+      )}
+    </div>
   );
 }
 
