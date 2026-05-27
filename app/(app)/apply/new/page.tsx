@@ -180,7 +180,7 @@ export default function NewApplicationPage() {
 
     try {
       setCurrentJob(form.companyName, form.jobTitle);
-      const result = await tailorResume(masterResume.id, { userId, ...form });
+      const result = await tailorResume(masterResume.id, form);
       setProgress(90);
       await pollTailoredResume(result.id, (status) => {
         if (status === "PROCESSING") setProgress(95);

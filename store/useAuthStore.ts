@@ -6,7 +6,6 @@ export interface AuthUser {
   name: string;
   email: string;
   plan: "FREE" | "PRO";
-  pictureUrl?: string | null;
 }
 
 interface AuthState {

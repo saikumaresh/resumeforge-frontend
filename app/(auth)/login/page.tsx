@@ -3,10 +3,9 @@ import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { Loader2, Eye, EyeOff, Globe } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 import { login } from "@/lib/api";
 import { useAuthStore } from "@/store/useAuthStore";
-import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 import { AuthUser } from "@/store/useAuthStore";
 
 function LoginContent() {
@@ -19,29 +18,22 @@ function LoginContent() {
   const [showPw, setShowPw]     = useState(false);
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState("");
-  const [googleOnly, setGoogleOnly] = useState(false);
 
   const next = searchParams.get("next") || "/dashboard";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setGoogleOnly(false);
     setLoading(true);
     try {
       const data = await login({ email, password });
-      const user: AuthUser = { userId: data.userId, name: data.name, email: data.email, plan: data.plan ?? "FREE", pictureUrl: data.pictureUrl };
+      const user: AuthUser = { userId: data.userId, name: data.name, email: data.email, plan: data.plan ?? "FREE" };
       setAuth(data.token, user);
       document.cookie = `rf-auth-token=${data.token}; path=/; max-age=${7 * 86400}; SameSite=Lax`;
       router.push(next);
     } catch (err: unknown) {
-      const status = (err as { response?: { status?: number } })?.response?.status;
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      if (status === 409) {
-        setGoogleOnly(true);
-      } else {
-        setError(msg || "Invalid email or password.");
-      }
+      setError(msg || "Invalid email or password.");
     } finally {
       setLoading(false);
     }
@@ -65,21 +57,6 @@ function LoginContent() {
         className="rounded-xl p-6 space-y-4"
         style={{ background: "#131316", border: "1px solid rgba(255,255,255,0.07)" }}
       >
-        {/* Google SSO */}
-        <GoogleSignInButton
-          label="Continue with Google"
-          onSuccess={() => router.push(next)}
-          onError={setError}
-        />
-
-        {/* Divider */}
-        <div className="flex items-center gap-3">
-          <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.07)" }} />
-          <span className="text-xs text-[#3F3F46]">or continue with email</span>
-          <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.07)" }} />
-        </div>
-
-        {/* Email / Password form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-medium text-[#71717A] mb-1.5">Email address</label>
@@ -123,20 +100,6 @@ function LoginContent() {
             </div>
           </div>
 
-          {googleOnly && (
-            <div
-              className="flex items-start gap-2.5 px-3 py-2.5 rounded-lg"
-              style={{ background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.2)" }}
-            >
-              <Globe className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: "#10B981" }} />
-              <div>
-                <p className="text-xs font-semibold text-[#FAFAFA]">This account uses Google sign-in</p>
-                <p className="text-[11px] text-[#71717A] mt-0.5">
-                  Please use the &ldquo;Continue with Google&rdquo; button above to log in.
-                </p>
-              </div>
-            </div>
-          )}
           {error && (
             <p className="text-xs text-[#EF4444] bg-[rgba(239,68,68,0.07)] px-3 py-2 rounded-lg border border-[rgba(239,68,68,0.15)]">
               {error}

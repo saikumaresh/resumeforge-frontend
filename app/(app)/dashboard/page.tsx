@@ -178,6 +178,7 @@ export default function DashboardPage() {
     try {
       const data = await getUserTailoredResumes(userId);
       setResumes(data);
+      setError(""); // clear any previous error on success
     } catch {
       setError("Could not load applications");
     } finally {

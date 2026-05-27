@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import { Loader2, Eye, EyeOff, CheckCircle2 } from "lucide-react";
 import { register } from "@/lib/api";
 import { useAuthStore, AuthUser } from "@/store/useAuthStore";
-import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 
 function StrengthBar({ password }: { password: string }) {
   const score = [
@@ -54,7 +53,7 @@ export default function SignupPage() {
     setLoading(true);
     try {
       const data = await register({ name, email, password });
-      const user: AuthUser = { userId: data.userId, name: data.name, email: data.email, plan: data.plan ?? "FREE", pictureUrl: data.pictureUrl };
+      const user: AuthUser = { userId: data.userId, name: data.name, email: data.email, plan: data.plan ?? "FREE" };
       setAuth(data.token, user);
       document.cookie = `rf-auth-token=${data.token}; path=/; max-age=${7 * 86400}; SameSite=Lax`;
       router.push("/resume"); // Send new users to set up their master resume first
@@ -103,20 +102,6 @@ export default function SignupPage() {
         className="rounded-xl p-6 space-y-4"
         style={{ background: "#131316", border: "1px solid rgba(255,255,255,0.07)" }}
       >
-        {/* Google SSO */}
-        <GoogleSignInButton
-          label="Sign up with Google"
-          onSuccess={() => router.push("/resume")}
-          onError={setError}
-        />
-
-        {/* Divider */}
-        <div className="flex items-center gap-3">
-          <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.07)" }} />
-          <span className="text-xs text-[#3F3F46]">or sign up with email</span>
-          <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.07)" }} />
-        </div>
-
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Name */}
         <div>
