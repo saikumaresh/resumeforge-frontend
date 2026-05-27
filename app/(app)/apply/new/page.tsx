@@ -160,11 +160,12 @@ export default function NewApplicationPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!userId) return; // wait for Zustand hydration
     if (masterResume) { setHasMaster(true); return; }
     getMasterResume(userId)
       .then((data) => { setMasterResume(data); setHasMaster(!!data); })
       .catch(() => setHasMaster(false));
-  }, [masterResume, setMasterResume]);
+  }, [masterResume, setMasterResume, userId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
