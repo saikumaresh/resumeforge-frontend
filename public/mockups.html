@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ResumeForge — Palette Mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Geist:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #08080A;
+    font-family: 'DM Sans', sans-serif;
+    color: #fff;
+  }
+
+  /* ── Palette selector ─── */
+  .selector {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: rgba(8,8,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .selector-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: #555;
+    margin-right: 16px;
+    letter-spacing: 0.04em;
+  }
+  .sel-btn {
+    padding: 6px 18px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: transparent;
+    color: #888;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .sel-btn:hover { color: #ccc; border-color: rgba(255,255,255,0.2); }
+  .sel-btn.active { color: #fff; border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.07); }
+  .palette-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  /* ── Palette containers ── */
+  .palette { display: none; padding-top: 56px; }
+  .palette.active { display: block; }
+
+  /* ── SHARED SCREEN CHROME ── */
+  .screen-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #444;
+    padding: 32px 0 12px 0;
+    text-align: center;
+  }
+  .screen-wrapper {
+    max-width: 1180px;
+    margin: 0 auto 48px;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
+  }
+  /* browser chrome */
+  .browser-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: #0F0F11;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.r { background: #FF5F57; }
+  .dot.y { background: #FEBC2E; }
+  .dot.g { background: #28C840; }
+  .url-bar {
+    margin-left: 12px;
+    flex: 1;
+    max-width: 320px;
+    padding: 4px 10px;
+    border-radius: 5px;
+    background: rgba(255,255,255,0.06);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    color: #555;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── PALETTE A — STUDIO ── */
+  .pa { --canvas: #0C0C0E; --surface: #131316; --elevated: #1C1C20; --input: #0A0A0C; --inset: #080809; --ghost: rgba(255,255,255,0.06); --base: rgba(255,255,255,0.10); --accent: #10B981; --accent-hover: #059669; --accent-text: #34D399; --accent-bg: rgba(16,185,129,0.07); --accent-border: rgba(16,185,129,0.28); --text-1: #ECECED; --text-2: #8A8A94; --text-3: #4A4A54; --text-4: #2C2C34; --violet: #8B5CF6; --amber: #F59E0B; --red: #EF4444; }
+
+  /* ── PALETTE B — CHALK ── */
+  .pb { --canvas: #111110; --surface: #19181A; --elevated: #222124; --input: #0E0E0D; --inset: #0B0B0A; --ghost: rgba(255,255,255,0.06); --base: rgba(255,255,255,0.09); --accent: #4ADE80; --accent-hover: #22C55E; --accent-text: #86EFAC; --accent-bg: rgba(74,222,128,0.06); --accent-border: rgba(74,222,128,0.26); --text-1: #F5F4F0; --text-2: #8C8A84; --text-3: #52504C; --text-4: #2E2C28; --violet: #A78BFA; --amber: #FCD34D; --red: #F87171; }
+
+  /* ── PALETTE C — MIDNIGHT ── */
+  .pc { --canvas: #080C14; --surface: #0F1520; --elevated: #182030; --input: #060A10; --inset: #050810; --ghost: rgba(255,255,255,0.06); --base: rgba(255,255,255,0.09); --accent: #2DD4BF; --accent-hover: #14B8A6; --accent-text: #5EEAD4; --accent-bg: rgba(45,212,191,0.07); --accent-border: rgba(45,212,191,0.26); --text-1: #E8EDF5; --text-2: #7A8499; --text-3: #404B5E; --text-4: #252D3B; --violet: #818CF8; --amber: #FBBF24; --red: #F87171; }
+
+  /* ── Shared UI Components ── */
+
+  /* Navbar */
+  .rf-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    height: 56px;
+    background: var(--canvas);
+    border-bottom: 1px solid var(--ghost);
+    position: relative;
+  }
+  .rf-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Geist', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-1);
+    letter-spacing: -0.02em;
+  }
+  .rf-logo-mark {
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .rf-logo-mark svg { width: 13px; height: 13px; }
+  .rf-logo span { color: var(--text-2); font-weight: 400; }
+  .rf-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .rf-nav-link {
+    padding: 18px 16px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text-2);
+    cursor: pointer;
+    position: relative;
+    transition: color 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .rf-nav-link.active {
+    color: var(--text-1);
+  }
+  .rf-nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 16px; right: 16px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px 2px 0 0;
+  }
+  .rf-nav-cta {
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: var(--accent);
+    color: var(--canvas);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .rf-nav-cta svg { width: 12px; height: 12px; }
+
+  /* Page body */
+  .rf-page {
+    background: var(--canvas);
+    min-height: 600px;
+    padding: 36px 40px 48px;
+  }
+
+  /* Summary line */
+  .rf-summary-line {
+    font-size: 13px;
+    color: var(--text-3);
+    font-family: 'DM Sans', sans-serif;
+    margin-bottom: 32px;
+  }
+  .rf-summary-line strong { color: var(--text-2); font-weight: 500; }
+
+  /* Page header */
+  .rf-page-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .rf-page-title {
+    font-family: 'Geist', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-1);
+    letter-spacing: -0.03em;
+  }
+
+  /* Application list */
+  .rf-list {
+    border-top: 1px solid var(--ghost);
+    border-bottom: 1px solid var(--ghost);
+  }
+  .rf-list-row {
+    display: flex;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--ghost);
+    gap: 16px;
+    cursor: pointer;
+    transition: background 0.12s;
+    padding-left: 12px; padding-right: 12px;
+    margin: 0 -12px;
+    border-radius: 8px;
+  }
+  .rf-list-row:hover { background: var(--elevated); }
+  .rf-list-row:last-child { border-bottom: none; }
+
+  /* Company initial */
+  .rf-initials {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--elevated);
+    border: 1px solid var(--ghost);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Geist', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-2);
+    flex-shrink: 0;
+  }
+
+  /* Row text */
+  .rf-row-info { flex: 1; min-width: 0; }
+  .rf-row-company {
+    font-family: 'Geist', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-1);
+    letter-spacing: -0.01em;
+  }
+  .rf-row-role {
+    font-size: 13px;
+    color: var(--text-2);
+    margin-top: 1px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* Row right side */
+  .rf-row-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .rf-row-date {
+    font-size: 12px;
+    color: var(--text-3);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .rf-score-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .rf-score-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .rf-score-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .rf-score-label {
+    font-size: 11px;
+    color: var(--text-3);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .rf-status-badge {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.01em;
+  }
+  .rf-badge-processing {
+    background: rgba(139,92,246,0.1);
+    color: #A78BFA;
+    border: 1px solid rgba(139,92,246,0.2);
+  }
+  .rf-badge-failed {
+    background: rgba(239,68,68,0.08);
+    color: #F87171;
+    border: 1px solid rgba(239,68,68,0.18);
+  }
+
+  .rf-chevron {
+    color: var(--text-3);
+    flex-shrink: 0;
+  }
+  .rf-chevron svg { width: 14px; height: 14px; }
+
+  /* ── DETAIL SCREEN ── */
+  .rf-detail-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--ghost);
+  }
+  .rf-back {
+    font-size: 13px;
+    color: var(--text-3);
+    font-family: 'DM Sans', sans-serif;
+    display: flex; align-items: center; gap: 5px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  .rf-detail-title {
+    font-family: 'Geist', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-1);
+    letter-spacing: -0.03em;
+    margin-bottom: 4px;
+  }
+  .rf-detail-title span { color: var(--text-2); font-weight: 400; }
+
+  /* ATS inline score */
+  .rf-ats-inline {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+  }
+  .rf-ats-score-big {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+  .rf-ats-bar-wrap {
+    flex: 1;
+    max-width: 240px;
+  }
+  .rf-ats-bar-label {
+    font-size: 11px;
+    color: var(--text-3);
+    font-family: 'DM Sans', sans-serif;
+    margin-bottom: 5px;
+    display: flex; justify-content: space-between;
+  }
+  .rf-ats-bar-track {
+    height: 4px;
+    background: var(--elevated);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .rf-ats-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+  }
+  .rf-ats-advisory {
+    flex: 1;
+    font-size: 12.5px;
+    color: var(--text-2);
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.5;
+  }
+  .rf-ats-advisory strong { color: var(--text-1); }
+  .rf-ats-advisory .kw {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background: rgba(239,68,68,0.08);
+    color: #F87171;
+    font-size: 11px;
+    margin: 1px;
+    border: 1px solid rgba(239,68,68,0.15);
+  }
+
+  /* Action buttons */
+  .rf-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .rf-btn-ghost {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--base);
+    background: transparent;
+    color: var(--text-2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .rf-btn-ghost svg { width: 13px; height: 13px; }
+  .rf-btn-primary {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent);
+    color: var(--canvas);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .rf-btn-primary svg { width: 13px; height: 13px; }
+
+  /* Resume editor */
+  .rf-editor-sections { margin-top: 0; }
+  .rf-editor-section {
+    margin-bottom: 2px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--ghost);
+  }
+  .rf-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--surface);
+    cursor: pointer;
+  }
+  .rf-section-label {
+    font-family: 'Geist', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-2);
+    letter-spacing: -0.01em;
+  }
+  .rf-editable-tag {
+    font-size: 10.5px;
+    color: var(--text-3);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .rf-section-body {
+    background: var(--inset);
+    padding: 14px 16px;
+  }
+  .rf-section-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.7;
+    white-space: pre-wrap;
+  }
+
+  /* Bottom sticky bar */
+  .rf-sticky-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 40px;
+    background: var(--canvas);
+    border-top: 1px solid var(--ghost);
+    margin: 24px -40px -48px;
+  }
+  .rf-sticky-hint {
+    font-size: 12px;
+    color: var(--text-3);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* ── Form screen ── */
+  .rf-form-page {
+    background: var(--canvas);
+    padding: 36px 40px 48px;
+    min-height: 560px;
+  }
+  .rf-form-header {
+    margin-bottom: 32px;
+  }
+  .rf-form-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--accent-text);
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .rf-form-title {
+    font-family: 'Geist', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-1);
+    letter-spacing: -0.03em;
+    margin-bottom: 4px;
+  }
+  .rf-form-sub {
+    font-size: 13.5px;
+    color: var(--text-2);
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.5;
+  }
+  .rf-field { margin-bottom: 20px; }
+  .rf-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .rf-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-2);
+    margin-bottom: 6px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .rf-label .req { color: var(--accent-text); margin-left: 2px; }
+  .rf-input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--ghost);
+    background: var(--input);
+    color: var(--text-1);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    outline: none;
+  }
+  .rf-input.focused {
+    border-color: var(--accent-border);
+    box-shadow: 0 0 0 3px var(--accent-bg);
+  }
+  .rf-textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--ghost);
+    background: var(--input);
+    color: var(--text-2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 160px;
+    resize: none;
+  }
+  .rf-textarea.mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+  .rf-submit {
+    width: 100%;
+    padding: 13px 20px;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent);
+    color: var(--canvas);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .rf-submit svg { width: 15px; height: 15px; }
+
+  /* Processing screen */
+  .rf-processing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 420px;
+    background: var(--canvas);
+    text-align: center;
+    padding: 48px;
+  }
+  .rf-processing-title {
+    font-family: 'Geist', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-1);
+    letter-spacing: -0.03em;
+    margin-bottom: 6px;
+    margin-top: 24px;
+  }
+  .rf-processing-title strong { color: var(--accent-text); }
+  .rf-processing-sub {
+    font-size: 13.5px;
+    color: var(--text-2);
+    font-family: 'DM Sans', sans-serif;
+    margin-bottom: 36px;
+  }
+  .rf-progress-bar-wrap {
+    width: 320px;
+    height: 2px;
+    background: var(--elevated);
+    border-radius: 1px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .rf-progress-bar-fill {
+    height: 100%;
+    border-radius: 1px;
+    background: var(--accent);
+    width: 58%;
+  }
+  .rf-processing-status {
+    font-size: 12.5px;
+    color: var(--text-3);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .rf-processing-status strong { color: var(--accent-text); font-weight: 500; }
+
+  /* Score breakdown (collapsible below editor) */
+  .rf-breakdown {
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--ghost);
+  }
+  .rf-breakdown-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-3);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .rf-breakdown-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .rf-breakdown-row:last-child { margin-bottom: 0; }
+  .rf-brow-label {
+    font-size: 12.5px;
+    color: var(--text-2);
+    font-family: 'DM Sans', sans-serif;
+    width: 90px;
+    flex-shrink: 0;
+  }
+  .rf-brow-track {
+    flex: 1;
+    height: 3px;
+    background: var(--elevated);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .rf-brow-fill {
+    height: 100%;
+    border-radius: 2px;
+  }
+  .rf-brow-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-3);
+    width: 40px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* resume page tabs */
+  .rf-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--ghost);
+    margin-bottom: 24px;
+  }
+  .rf-tab {
+    padding: 10px 0;
+    margin-right: 24px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text-3);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    position: relative;
+  }
+  .rf-tab.active {
+    color: var(--text-1);
+  }
+  .rf-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+  }
+  .rf-editor-wrap {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--ghost);
+  }
+  .rf-editor-head {
+    padding: 12px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--ghost);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .rf-editor-head-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-2);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .rf-editor-head-sub {
+    font-size: 11px;
+    color: var(--text-3);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .rf-editor-body {
+    padding: 16px;
+    background: var(--inset);
+    min-height: 220px;
+  }
+  .rf-editor-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--text-2);
+    line-height: 1.8;
+  }
+  .rf-editor-footer {
+    padding: 10px 16px;
+    background: var(--surface);
+    border-top: 1px solid var(--ghost);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .rf-char-count {
+    font-size: 11.5px;
+    color: var(--text-3);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Palette label pill */
+  .palette-label {
+    text-align: center;
+    padding: 40px 0 20px;
+    position: relative;
+  }
+  .palette-label-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    border-radius: 100px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #888;
+  }
+  .palette-label-inner strong {
+    color: #ddd;
+    font-weight: 600;
+  }
+
+  /* Screen switcher inside each palette */
+  .screen-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin: 0 auto 24px;
+    max-width: 1180px;
+  }
+  .screen-tab {
+    padding: 5px 14px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: transparent;
+    color: #555;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .screen-tab:hover { color: #999; border-color: rgba(255,255,255,0.14); }
+  .screen-tab.on { color: #ccc; border-color: rgba(255,255,255,0.22); background: rgba(255,255,255,0.05); }
+  .screens-container { max-width: 1180px; margin: 0 auto; }
+  .screen-view { display: none; }
+  .screen-view.on { display: block; }
+  .px40 { padding: 36px 40px 48px; }
+
+  /* Scrollable wrapper */
+  .outer { padding: 0 24px; }
+</style>
+</head>
+<body>
+
+<!-- Palette selector bar -->
+<div class="selector">
+  <span class="selector-title">Pick a palette →</span>
+  <button class="sel-btn active" onclick="showPalette('a', this)">
+    <span class="palette-dot" style="background:#10B981"></span> A · Studio
+  </button>
+  <button class="sel-btn" onclick="showPalette('b', this)">
+    <span class="palette-dot" style="background:#4ADE80"></span> B · Chalk
+  </button>
+  <button class="sel-btn" onclick="showPalette('c', this)">
+    <span class="palette-dot" style="background:#2DD4BF"></span> C · Midnight
+  </button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PALETTE A — STUDIO                                     -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="palette pa active" id="pal-a">
+  <div class="palette-label">
+    <div class="palette-label-inner">
+      <span class="palette-dot" style="background:#10B981;width:10px;height:10px;border-radius:50%;display:inline-block;"></span>
+      <strong>Palette A — "Studio"</strong>
+      <span>Neutral dark · Emerald accent · Professional precision</span>
+    </div>
+  </div>
+
+  <div class="outer">
+    <div class="screen-tabs">
+      <button class="screen-tab on" onclick="showScreen('a','dash',this)">Dashboard</button>
+      <button class="screen-tab" onclick="showScreen('a','detail',this)">Application Detail</button>
+      <button class="screen-tab" onclick="showScreen('a','new',this)">New Application</button>
+      <button class="screen-tab" onclick="showScreen('a','process',this)">Processing</button>
+      <button class="screen-tab" onclick="showScreen('a','resume',this)">My Resume</button>
+    </div>
+
+    <div class="screens-container">
+
+      <!-- DASHBOARD -->
+      <div class="screen-view on" id="a-dash">
+        <div class="screen-wrapper">
+          <div class="browser-bar pa"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url-bar">localhost:3001/dashboard</span></div>
+          <div>
+            <div class="rf-nav pa">
+              <div class="rf-logo pa">
+                <div class="rf-logo-mark pa">
+                  <svg viewBox="0 0 16 16" fill="none"><path d="M8 2L14 6V10L8 14L2 10V6L8 2Z" fill="white" opacity="0.9"/></svg>
+                </div>
+                Resume<span>Forge</span>
+              </div>
+              <div class="rf-nav-links pa">
+                <div class="rf-nav-link active pa">Dashboard</div>
+                <div class="rf-nav-link pa">My Resume</div>
+              </div>
+              <button class="rf-nav-cta pa">
+                <svg viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                New Application
+              </button>
+            </div>
+            <div class="rf-page pa px40">
+              <div class="rf-page-header pa">
+                <div class="rf-page-title pa">Applications</div>
+              </div>
+              <div class="rf-summary-line pa" style="margin-bottom:28px;">3 applications · <strong>Avg. ATS 74</strong> · 2 completed</div>
+
+              <div class="rf-list pa">
+                <!-- Row 1 -->
+                <div class="rf-list-row pa">
+                  <div class="rf-initials pa">T</div>
+                  <div class="rf-row-info pa">
+                    <div class="rf-row-company pa">TechCorp</div>
+                    <div class="rf-row-role pa">Senior Java Developer</div>
+                  </div>
+                  <div class="rf-row-right pa">
+                    <div class="rf-row-date pa">Today</div>
+                    <div class="rf-score-display pa">
+                      <div class="rf-score-dot pa" style="background:#F59E0B;box-shadow:0 0 5px rgba(245,158,11,0.4)"></div>
+                      <div>
+                        <div class="rf-score-num pa" style="color:#F59E0B">64</div>
+                        <div class="rf-score-label pa">Good match</div>
+                      </div>
+                    </div>
+                    <div class="rf-chevron pa"><svg viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                </div>
+                <!-- Row 2 -->
+                <div class="rf-list-row pa">
+                  <div class="rf-initials pa">S</div>
+                  <div class="rf-row-info pa">
+                    <div class="rf-row-company pa">Stripe</div>
+                    <div class="rf-row-role pa">Backend Engineer, Payments</div>
+                  </div>
+                  <div class="rf-row-right pa">
+                    <div class="rf-row-date pa">Yesterday</div>
+                    <div class="rf-score-display pa">
+                      <div class="rf-score-dot pa" style="background:#10B981;box-shadow:0 0 5px rgba(16,185,129,0.4)"></div>
+                      <div>
+                        <div class="rf-score-num pa" style="color:#10B981">87</div>
+                        <div class="rf-score-label pa">Strong match</div>
+                      </div>
+                    </div>
+                    <div class="rf-chevron pa"><svg viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                </div>
+                <!-- Row 3 -->
+                <div class="rf-list-row pa">
+                  <div class="rf-initials pa">G</div>
+                  <div class="rf-row-info pa">
+                    <div class="rf-row-company pa">Google</div>
+                    <div class="rf-row-role pa">Senior Backend Engineer</div>
+                  </div>
+                  <div class="rf-row-right pa">
+                    <div class="rf-row-date pa">Today</div>
+                    <div class="rf-score-display pa">
+                      <div class="rf-status-badge rf-badge-processing pa">Processing</div>
+                    </div>
+                    <div class="rf-chevron pa"><svg viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DETAIL -->
+      <div class="screen-view" id="a-detail">
+        <div class="screen-wrapper">
+          <div class="browser-bar pa"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url-bar">localhost:3001/apply/81da…</span></div>
+          <div>
+            <div class="rf-nav pa">
+              <div class="rf-logo pa"><div class="rf-logo-mark pa"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2L14 6V10L8 14L2 10V6L8 2Z" fill="white" opacity="0.9"/></svg></div>Resume<span>Forge</span></div>
+              <div class="rf-nav-links pa"><div class="rf-nav-link pa">Dashboard</div><div class="rf-nav-link pa">My Resume</div></div>
+              <button class="rf-nav-cta pa"><svg viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>New Application</button>
+            </div>
+            <div class="rf-page pa px40">
+              <div class="rf-detail-header pa">
+                <div>
+                  <div class="rf-back pa"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Back</div>
+                  <div class="rf-detail-title pa">TechCorp <span>· Senior Java Developer</span></div>
+                  <div class="rf-ats-inline pa">
+                    <div class="rf-ats-score-big pa" style="color:#F59E0B">64</div>
+                    <div class="rf-ats-bar-wrap pa">
+                      <div class="rf-ats-bar-label pa"><span>ATS Score</span><span style="color:#8A8A94">/ 100</span></div>
+                      <div class="rf-ats-bar-track pa"><div class="rf-ats-bar-fill pa" style="width:64%;background:#F59E0B"></div></div>
+                    </div>
+                    <div class="rf-ats-advisory pa">Good match. Add <span class="kw">senior</span><span class="kw">ci/cd</span><span class="kw">pipelines</span> to improve.</div>
+                  </div>
+                </div>
+                <div class="rf-actions pa">
+                  <button class="rf-btn-ghost pa"><svg viewBox="0 0 13 13" fill="none"><path d="M2 11l2-2m0 0l5-5m-5 5l1-3 2 2-3 1zm5-5l1-2 2-1-1 2-2 1z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Save edits</button>
+                  <button class="rf-btn-primary pa"><svg viewBox="0 0 13 13" fill="none"><path d="M6.5 1v8M3.5 7l3 3 3-3M2 11h9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Export PDF</button>
+                </div>
+              </div>
+              <div class="rf-editor-sections pa">
+                <div class="rf-editor-section pa">
+                  <div class="rf-section-head pa"><span class="rf-section-label pa">Professional Summary</span><span class="rf-editable-tag pa">click to edit</span></div>
+                  <div class="rf-section-body pa"><div class="rf-section-text pa">Experienced Java engineer with 5+ years building distributed systems at scale. Proficient in Spring Boot, Kafka, and PostgreSQL. Strong background in microservices architecture and CI/CD pipelines.</div></div>
+                </div>
+                <div class="rf-editor-section pa" style="margin-top:2px;">
+                  <div class="rf-section-head pa"><span class="rf-section-label pa">Work Experience</span><span class="rf-editable-tag pa">click to edit</span></div>
+                  <div class="rf-section-body pa"><div class="rf-section-text pa">Senior Software Engineer — Acme Corp (2021–present)
+Led distributed systems using Java, Spring Boot, Kafka.
+Reduced service latency by 40% through architectural improvements.
+Deployed containerised apps using Docker and Kubernetes.</div></div>
+                </div>
+                <div class="rf-editor-section pa" style="margin-top:2px;">
+                  <div class="rf-section-head pa"><span class="rf-section-label pa">Skills</span><span class="rf-editable-tag pa">click to edit</span></div>
+                  <div class="rf-section-body pa"><div class="rf-section-text pa">Java · Spring Boot · Kafka · Docker · Kubernetes · PostgreSQL · Redis · AWS · CI/CD</div></div>
+                </div>
+              </div>
+              <div class="rf-breakdown pa">
+                <div class="rf-breakdown-title pa">Score breakdown</div>
+                <div class="rf-breakdown-row pa"><span class="rf-brow-label pa">Keywords</span><div class="rf-brow-track pa"><div class="rf-brow-fill pa" style="width:68%;background:#F59E0B"></div></div><span class="rf-brow-val pa">34/50</span></div>
+                <div class="rf-breakdown-row pa"><span class="rf-brow-label pa">Sections</span><div class="rf-brow-track pa"><div class="rf-brow-fill pa" style="width:90%;background:#10B981"></div></div><span class="rf-brow-val pa">27/30</span></div>
+                <div class="rf-breakdown-row pa"><span class="rf-brow-label pa">Action verbs</span><div class="rf-brow-track pa"><div class="rf-brow-fill pa" style="width:55%;background:#EF4444"></div></div><span class="rf-brow-val pa">11/20</span></div>
+              </div>
+              <div class="rf-sticky-bar pa">
+                <span class="rf-sticky-hint pa">Unsaved changes</span>
+                <div class="rf-actions pa">
+                  <button class="rf-btn-ghost pa">Save edits</button>
+                  <button class="rf-btn-primary pa">Export PDF →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NEW APPLICATION -->
+      <div class="screen-view" id="a-new">
+        <div class="screen-wrapper">
+          <div class="browser-bar pa"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url-bar">localhost:3001/apply/new</span></div>
+          <div>
+            <div class="rf-nav pa"><div class="rf-logo pa"><div class="rf-logo-mark pa"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2L14 6V10L8 14L2 10V6L8 2Z" fill="white" opacity="0.9"/></svg></div>Resume<span>Forge</span></div><div class="rf-nav-links pa"><div class="rf-nav-link pa">Dashboard</div><div class="rf-nav-link pa">My Resume</div></div><button class="rf-nav-cta pa"><svg viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>New Application</button></div>
+            <div class="rf-form-page pa">
+              <div style="max-width:540px;margin:0 auto;">
+                <div class="rf-form-header pa">
+                  <div class="rf-form-eyebrow pa">New application</div>
+                  <div class="rf-form-title pa">Tailor your resume</div>
+                  <div class="rf-form-sub pa">Paste the job description and our AI will optimise your resume for this role.</div>
+                </div>
+                <div class="rf-field-row pa">
+                  <div><label class="rf-label pa">Company name <span class="req">*</span></label><input class="rf-input focused pa" value="Google" readonly /></div>
+                  <div><label class="rf-label pa">Job title <span class="req">*</span></label><input class="rf-input pa" placeholder="e.g. Staff Engineer" readonly /></div>
+                </div>
+                <div class="rf-field pa">
+                  <label class="rf-label pa">Job description <span class="req">*</span></label>
+                  <textarea class="rf-textarea pa" readonly>We are looking for a Senior Backend Engineer to join our infrastructure team. You will design and build systems that handle millions of requests per day.
+
+Requirements:
+• 5+ years of backend engineering experience
+• Strong proficiency in Java, Go, or Rust
+• Experience with distributed systems and microservices
+• Familiarity with Kubernetes and CI/CD pipelines</textarea>
+                </div>
+                <div class="rf-field pa">
+                  <label class="rf-label pa">Required skills <span style="color:#4A4A54;font-weight:400;">(optional)</span></label>
+                  <input class="rf-input pa" placeholder="e.g. Java, Kubernetes, PostgreSQL" readonly />
+                </div>
+                <button class="rf-submit pa">Tailor this resume →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROCESSING -->
+      <div class="screen-view" id="a-process">
+        <div class="screen-wrapper">
+          <div class="browser-bar pa"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url-bar">localhost:3001/apply/new</span></div>
+          <div>
+            <div class="rf-nav pa"><div class="rf-logo pa"><div class="rf-logo-mark pa"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2L14 6V10L8 14L2 10V6L8 2Z" fill="white" opacity="0.9"/></svg></div>Resume<span>Forge</span></div><div class="rf-nav-links pa"><div class="rf-nav-link pa">Dashboard</div><div class="rf-nav-link pa">My Resume</div></div><button class="rf-nav-cta pa"><svg viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>New Application</button></div>
+            <div class="rf-processing pa">
+              <div style="width:48px;height:48px;border-radius:10px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);display:flex;align-items:center;justify-content:center;">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2L13.5 8H20L14.8 11.8L17 18L11 14.2L5 18L7.2 11.8L2 8H8.5L11 2Z" fill="#10B981" opacity="0.9"/></svg>
+              </div>
+              <div class="rf-processing-title pa">Working on your <strong>Google</strong> application</div>
+              <div class="rf-processing-sub pa">This usually takes about 20 seconds.</div>
+              <div class="rf-progress-bar-wrap pa"><div class="rf-progress-bar-fill pa"></div></div>
+              <div class="rf-processing-status pa">Matching keywords and rewriting experience section<strong>…</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MY RESUME -->
+      <div class="screen-view" id="a-resume">
+        <div class="screen-wrapper">
+          <div class="browser-bar pa"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url-bar">localhost:3001/resume</span></div>
+          <div>
+            <div class="rf-nav pa"><div class="rf-logo pa"><div class="rf-logo-mark pa"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2L14 6V10L8 14L2 10V6L8 2Z" fill="white" opacity="0.9"/></svg></div>Resume<span>Forge</span></div><div class="rf-nav-links pa"><div class="rf-nav-link pa">Dashboard</div><div class="rf-nav-link active pa">My Resume</div></div><button class="rf-nav-cta pa"><svg viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>New Application</button></div>
+            <div class="rf-form-page pa" style="max-width:720px;">
+              <div class="rf-page-title pa" style="margin-bottom:24px;">My Resume</div>
+              <div class="rf-tabs pa">
+                <div class="rf-tab active pa">Master resume</div>
+                <div class="rf-tab pa">Reference files</div>
+              </div>
+              <div class="rf-editor-wrap pa">
+                <div class="rf-editor-head pa">
+                  <div class="rf-editor-head-label pa">Base resume</div>
+                  <div class="rf-editor-head-sub pa">Last saved 2 hours ago</div>
+                </div>
+                <div class="rf-editor-body pa">
+                  <div class="rf-editor-text pa">Led distributed systems using Java Spring Boot Kafka. Architected scalable microservices reducing latency by 40%. Deployed containerised apps using Docker and Kubernetes.
+
+Java, Spring Boot, Kafka, Docker, Kubernetes, PostgreSQL, Redis, AWS
+
+B.Tech Computer Science 2019
+
+Backend engineer specialising in distributed systems and cloud-native applications</div>
+                </div>
+                <div class="rf-editor-footer pa">
+                  <span class="rf-char-count pa">354 chars</span>
+                  <button class="rf-btn-primary pa">Save resume</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /screens-container -->
+  </div><!-- /outer -->
+</div><!-- /palette A -->
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PALETTE B — CHALK                                      -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="palette pb" id="pal-b">
+  <div class="palette-label">
+    <div class="palette-label-inner">
+      <span class="palette-dot" style="background:#4ADE80;width:10px;height:10px;border-radius:50%;display:inline-block;"></span>
+      <strong>Palette B — "Chalk"</strong>
+      <span>Warm dark · Sage accent · Editorial warmth</span>
+    </div>
+  </div>
+
+  <div class="outer">
+    <div class="screen-tabs">
+      <button class="screen-tab on" onclick="showScreen('b','dash',this)">Dashboard</button>
+      <button class="screen-tab" onclick="showScreen('b','detail',this)">Application Detail</button>
+      <button class="screen-tab" onclick="showScreen('b','new',this)">New Application</button>
+      <button class="screen-tab" onclick="showScreen('b','process',this)">Processing</button>
+      <button class="screen-tab" onclick="showScreen('b','resume',this)">My Resume</button>
+    </div>
+
+    <div class="screens-container">
+      <!-- DASHBOARD -->
+      <div class="screen-view on" id="b-dash">
+        <div class="screen-wrapper">
+          <div class="browser-bar pb"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url-bar" style="background:rgba(255,255,255,0.05);">localhost:3001/dashboard</span></div>
+          <div>
+            <div class="rf-nav pb">
+              <div class="rf-logo pb"><div class="rf-logo-mark pb"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2L14 6V10L8 14L2 10V6L8 2Z" fill="#111" opacity="0.9"/></svg></div>Resume<span>Forge</span></div>
+              <div class="rf-nav-links pb"><div class="rf-nav-link active pb">Dashboard</div><div class="rf-nav-link pb">My Resume</div></div>
+              <button class="rf-nav-cta pb" style="color:#111;"><svg viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>New Application</button>
+            </div>
+            <div class="rf-page pb px40">
+              <div class="rf-page-header pb"><div class="rf-page-title pb">Applications</div></div>
+              <div class="rf-summary-line pb" style="margin-bottom:28px;">3 applications · <strong>Avg. ATS 74</strong> · 2 completed</div>
+              <div class="rf-list pb">
+                <div class="rf-list-row pb">
+                  <div class="rf-initials pb">T</div>
+                  <div class="rf-row-info pb"><div class="rf-row-company pb">TechCorp</div><div class="rf-row-role pb">Senior Java Developer</div></div>
+                  <div class="rf-row-right pb">
+                    <div class="rf-row-date pb">Today</div>
+                    <div class="rf-score-display pb"><div class="rf-score-dot pb" style="background:#FBBF24;box-shadow:0 0 5px rgba(251,191,36,0.4)"></div><div><div class="rf-score-num pb" style="color:#FBBF24">64</div><div class="rf-score-label pb">Good match</div></div></div>
+                    <div class="rf-chevron pb"><svg viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                </div>
+                <div class="rf-list-row pb">
+                  <div class="rf-initials pb">S</div>
+                  <div class="rf-row-info pb"><div class="rf-row-company pb">Stripe</div><div class="rf-row-role pb">Backend Engineer, Payments</div></div>
+                  <div class="rf-row-right pb">
+                    <div class="rf-row-date pb">Yesterday</div>
+                    <div class="rf-score-display pb"><div class="rf-score-dot pb" style="background:#4ADE80;box-shadow:0 0 5px rgba(74,222,128,0.4)"></div><div><div class="rf-score-num pb" style="color:#4ADE80">87</div><div class="rf-score-label pb">Strong match</div></div></div>
+                    <div class="rf-chevron pb"><svg viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                </div>
+                <div class="rf-list-row pb">
+                  <div class="rf-initials pb">G</div>
+                  <div class="rf-row-info pb"><div class="rf-row-company pb">Google</div><div class="rf-row-role pb">Senior Backend Engineer</div></div>
+                  <div class="rf-row-right pb">
+                    <div class="rf-row-date pb">Today</div>
+                    <div class="rf-score-display pb"><div class="rf-status-badge rf-badge-processing pb" style="background:rgba(167,139,250,0.1);color:#C4B5FD;border-color:rgba(167,139,250,0.2);">Processing</div></div>
+                    <div class="rf-chevron pb"><svg viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- DETAIL -->
+      <div class="screen-view" id="b-detail">
+        <div class="screen-wrapper">
+          <div class="browser-bar pb"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url-bar" style="background:rgba(255,255,255,0.05);">localhost:3001/apply/81da…</span></div>
+          <div>
+            <div class="rf-nav pb"><div class="rf-logo pb"><div class="rf-logo-mark pb"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2L14 6V10L8 14L2 10V6L8 2Z" fill="#111"/></svg></div>Resume<span>Forge</span></div><div class="rf-nav-links pb"><div class="rf-nav-link pb">Dashboard</div><div class="rf-nav-link pb">My Resume</div></div><button class="rf-nav-cta pb" style="color:#111;"><svg viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>New Application</button></div>
+            <div class="rf-page pb px40">
+              <div class="rf-detail-header pb">
+                <div>
+                  <div class="rf-back pb"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Back</div>
+                  <div class="rf-detail-title pb">TechCorp <span>· Senior Java Developer</span></div>
+                  <div class="rf-ats-inline pb">
+                    <div class="rf-ats-score-big pb" style="color:#FBBF24">64</div>
+                    <div class="rf-ats-bar-wrap pb"><div class="rf-ats-bar-label pb"><span>ATS Score</span><span>/ 100</span></div><div class="rf-ats-bar-track pb"><div class="rf-ats-bar-fill pb" style="width:64%;background:#FBBF24"></div></div></div>
+                    <div class="rf-ats-advisory pb">Good match. Add <span class="kw" style="background:rgba(248,113,113,0.08);color:#F87171;border-color:rgba(248,113,113,0.15);">senior</span><span class="kw" style="background:rgba(248,113,113,0.08);color:#F87171;border-color:rgba(248,113,113,0.15);">ci/cd</span><span class="kw" style="background:rgba(248,113,113,0.08);color:#F87171;border-color:rgba(248,113,113,0.15);">pipelines</span> to improve.</div>
+                  </div>
+                </div>
+                <div class="rf-actions pb"><button class="rf-btn-ghost pb">Save edits</button><button class="rf-btn-primary pb" style="color:#111;">Export PDF →</button></div>
+              </div>
+              <div class="rf-editor-sections pb">
+                <div class="rf-editor-section pb"><div class="rf-section-head pb"><span class="rf-section-label pb">Professional Summary</span><span class="rf-editable-tag pb">click to edit</span></div><div class="rf-section-body pb"><div class="rf-section-text pb">Experienced Java engineer with 5+ years building distributed systems at scale. Proficient in Spring Boot, Kafka, and PostgreSQL.</div></div></div>
+                <div class="rf-editor-section pb" style="margin-top:2px;"><div class="rf-section-head pb"><span class="rf-section-label pb">Work Experience</span><span class="rf-editable-tag pb">click to edit</span></div><div class="rf-section-body pb"><div class="rf-section-text pb">Senior Software Engineer — Acme Corp (2021–present)
+Led distributed systems using Java, Spring Boot, Kafka.
+Reduced service latency by 40% through architectural improvements.</div></div></div>
+                <div class="rf-editor-section pb" style="margin-top:2px;"><div class="rf-section-head pb"><span class="rf-section-label pb">Skills</span><span class="rf-editable-tag pb">click to edit</span></div><div class="rf-section-body pb"><div class="rf-section-text pb">Java · Spring Boot · Kafka · Docker · Kubernetes · PostgreSQL · Redis · AWS</div></div></div>
+              </div>
+              <div class="rf-breakdown pb"><div class="rf-breakdown-title pb">Score breakdown</div><div class="rf-breakdown-row pb"><span class="rf-brow-label pb">Keywords</span><div class="rf-brow-track pb"><div class="rf-brow-fill pb" style="width:68%;background:#FBBF24"></div></div><span class="rf-brow-val pb">34/50</span></div><div class="rf-breakdown-row pb"><span class="rf-brow-label pb">Sections</span><div class="rf-brow-track pb"><div class="rf-brow-fill pb" style="width:90%;background:#4ADE80"></div></div><span class="rf-brow-val pb">27/30</span></div><div class="rf-breakdown-row pb"><span class="rf-brow-label pb">Action verbs</span><div class="rf-brow-track pb"><div class="rf-brow-fill pb" style="width:55%;background:#F87171"></div></div><span class="rf-brow-val pb">11/20</span></div></div>
+              <div class="rf-sticky-bar pb"><span class="rf-sticky-hint pb">Unsaved changes</span><div class="rf-actions pb"><button class="rf-btn-ghost pb">Save edits</button><button class="rf-btn-primary pb" style="color:#111;">Export PDF →</button></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- NEW -->
+      <div class="screen-view" id="b-new">
+        <div class="screen-wrapper">
+          <div class="browser-bar pb"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url-bar" style="background:rgba(255,255,255,0.05);">localhost:3001/apply/new</span></div>
+          <div>
+            <div class="rf-nav pb"><div class="rf-logo pb"><div class="rf-logo-mark pb"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2L14 6V10L8 14L2 10V6L8 2Z" fill="#111"/></svg></div>Resume<span>Forge</span></div><div class="rf-nav-links pb"><div class="rf-nav-link pb">Dashboard</div><div class="rf-nav-link pb">My Resume</div></div><button class="rf-nav-cta pb" style="color:#111;"><svg viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>New Application</button></div>
+            <div class="rf-form-page pb"><div style="max-width:540px;margin:0 auto;"><div class="rf-form-header pb"><div class="rf-form-eyebrow pb">New application</div><div class="rf-form-title pb">Tailor your resume</div><div class="rf-form-sub pb">Paste the job description and our AI will optimise your resume for this role.</div></div><div class="rf-field-row pb"><div><label class="rf-label pb">Company name <span class="req">*</span></label><input class="rf-input focused pb" value="Google" readonly /></div><div><label class="rf-label pb">Job title <span class="req">*</span></label><input class="rf-input pb" placeholder="e.g. Staff Engineer" readonly /></div></div><div class="rf-field pb"><label class="rf-label pb">Job description <span class="req">*</span></label><textarea class="rf-textarea pb" readonly>We are looking for a Senior Backend Engineer to join our infrastructure team. You will design and build systems that handle millions of requests per day.
+
+Requirements:
+• 5+ years backend experience
+• Strong proficiency in Java, Go, or Rust
+• Experience with distributed systems</textarea></div><div class="rf-field pb"><label class="rf-label pb">Required skills <span style="font-weight:400;">(optional)</span></label><input class="rf-input pb" placeholder="e.g. Java, Kubernetes, PostgreSQL" readonly /></div><button class="rf-submit pb" style="color:#111;">Tailor this resume →</button></div></div>
+          </div>
+        </div>
+      </div>
+      <!-- PROCESSING -->
+      <div class="screen-view" id="b-process">
+        <div class="screen-wrapper">
+          <div class="browser-bar pb"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url-bar" style="background:rgba(255,255,255,0.05);">localhost:3001/apply/new</span></div>
+          <div>
+            <div class="rf-nav pb"><div class="rf-logo pb"><div class="rf-logo-mark pb"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2L14 6V10L8 14L2 10V6L8 2Z" fill="#111"/></svg></div>Resume<span>Forge</span></div><div class="rf-nav-links pb"><div class="rf-nav-link pb">Dashboard</div><div class="rf-nav-link pb">My Resume</div></div><button class="rf-nav-cta pb" style="color:#111;"><svg viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>New Application</button></div>
+            <div class="rf-processing pb"><div style="width:48px;height:48px;border-radius:10px;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.2);display:flex;align-items:center;justify-content:center;"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2L13.5 8H20L14.8 11.8L17 18L11 14.2L5 18L7.2 11.8L2 8H8.5L11 2Z" fill="#4ADE80" opacity="0.9"/></svg></div><div class="rf-processing-title pb">Working on your <strong>Google</strong> application</div><div class="rf-processing-sub pb">This usually takes about 20 seconds.</div><div class="rf-progress-bar-wrap pb"><div class="rf-progress-bar-fill pb" style="background:#4ADE80;"></div></div><div class="rf-processing-status pb">Matching keywords and rewriting experience section<strong>…</strong></div></div>
+          </div>
+        </div>
+      </div>
+      <!-- RESUME -->
+      <div class="screen-view" id="b-resume">
+        <div class="screen-wrapper">
+          <div class="browser-bar pb"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url-bar" style="background:rgba(255,255,255,0.05);">localhost:3001/resume</span></div>
+          <div>
+            <div class="rf-nav pb"><div class="rf-logo pb"><div class="rf-logo-mark pb"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2L14 6V10L8 14L2 10V6L8 2Z" fill="#111"/></svg></div>Resume<span>Forge</span></div><div class="rf-nav-links pb"><div class="rf-nav-link pb">Dashboard</div><div class="rf-nav-link active pb">My Resume</div></div><button class="rf-nav-cta pb" style="color:#111;"><svg viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>New Application</button></div>
+            <div class="rf-form-page pb" style="max-width:720px;"><div class="rf-page-title pb" style="margin-bottom:24px;">My Resume</div><div class="rf-tabs pb"><div class="rf-tab active pb">Master resume</div><div class="rf-tab pb">Reference files</div></div><div class="rf-editor-wrap pb"><div class="rf-editor-head pb"><div class="rf-editor-head-label pb">Base resume</div><div class="rf-editor-head-sub pb">Last saved 2 hours ago</div></div><div class="rf-editor-body pb"><div class="rf-editor-text pb">Led distributed systems using Java Spring Boot Kafka. Architected scalable microservices reducing latency by 40%. Deployed containerised apps using Docker and Kubernetes.
+
+Java, Spring Boot, Kafka, Docker, Kubernetes, PostgreSQL, Redis, AWS
+
+B.Tech Computer Science 2019</div></div><div class="rf-editor-footer pb"><span class="rf-char-count pb">354 chars</span><button class="rf-btn-primary pb" style="color:#111;">Save resume</button></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PALETTE C — MIDNIGHT                                   -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="palette pc" id="pal-c">
+  <div class="palette-label">
+    <div class="palette-label-inner">
+      <span class="palette-dot" style="background:#2DD4BF;width:10px;height:10px;border-radius:50%;display:inline-block;"></span>
+      <strong>Palette C — "Midnight"</strong>
+      <span>Deep blue-black · Teal accent · Trusted gravity</span>
+    </div>
+  </div>
+
+  <div class="outer">
+    <div class="screen-tabs">
+      <button class="screen-tab on" onclick="showScreen('c','dash',this)">Dashboard</button>
+      <button class="screen-tab" onclick="showScreen('c','detail',this)">Application Detail</button>
+      <button class="screen-tab" onclick="showScreen('c','new',this)">New Application</button>
+      <button class="screen-tab" onclick="showScreen('c','process',this)">Processing</button>
+      <button class="screen-tab" onclick="showScreen('c','resume',this)">My Resume</button>
+    </div>
+
+    <div class="screens-container">
+      <!-- DASHBOARD -->
+      <div class="screen-view on" id="c-dash">
+        <div class="screen-wrapper">
+          <div class="browser-bar pc"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url-bar" style="background:rgba(255,255,255,0.05);">localhost:3001/dashboard</span></div>
+          <div>
+            <div class="rf-nav pc">
+              <div class="rf-logo pc"><div class="rf-logo-mark pc"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2L14 6V10L8 14L2 10V6L8 2Z" fill="#080C14" opacity="0.9"/></svg></div>Resume<span>Forge</span></div>
+              <div class="rf-nav-links pc"><div class="rf-nav-link active pc">Dashboard</div><div class="rf-nav-link pc">My Resume</div></div>
+              <button class="rf-nav-cta pc" style="color:#05101E;"><svg viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>New Application</button>
+            </div>
+            <div class="rf-page pc px40">
+              <div class="rf-page-header pc"><div class="rf-page-title pc">Applications</div></div>
+              <div class="rf-summary-line pc" style="margin-bottom:28px;">3 applications · <strong>Avg. ATS 74</strong> · 2 completed</div>
+              <div class="rf-list pc">
+                <div class="rf-list-row pc"><div class="rf-initials pc">T</div><div class="rf-row-info pc"><div class="rf-row-company pc">TechCorp</div><div class="rf-row-role pc">Senior Java Developer</div></div><div class="rf-row-right pc"><div class="rf-row-date pc">Today</div><div class="rf-score-display pc"><div class="rf-score-dot pc" style="background:#FBBF24;box-shadow:0 0 5px rgba(251,191,36,0.4)"></div><div><div class="rf-score-num pc" style="color:#FBBF24">64</div><div class="rf-score-label pc">Good match</div></div></div><div class="rf-chevron pc"><svg viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
+                <div class="rf-list-row pc"><div class="rf-initials pc">S</div><div class="rf-row-info pc"><div class="rf-row-company pc">Stripe</div><div class="rf-row-role pc">Backend Engineer, Payments</div></div><div class="rf-row-right pc"><div class="rf-row-date pc">Yesterday</div><div class="rf-score-display pc"><div class="rf-score-dot pc" style="background:#2DD4BF;box-shadow:0 0 5px rgba(45,212,191,0.4)"></div><div><div class="rf-score-num pc" style="color:#2DD4BF">87</div><div class="rf-score-label pc">Strong match</div></div></div><div class="rf-chevron pc"><svg viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
+                <div class="rf-list-row pc"><div class="rf-initials pc">G</div><div class="rf-row-info pc"><div class="rf-row-company pc">Google</div><div class="rf-row-role pc">Senior Backend Engineer</div></div><div class="rf-row-right pc"><div class="rf-row-date pc">Today</div><div class="rf-score-display pc"><div class="rf-status-badge rf-badge-processing pc" style="background:rgba(129,140,248,0.1);color:#A5B4FC;border-color:rgba(129,140,248,0.2);">Processing</div></div><div class="rf-chevron pc"><svg viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- DETAIL -->
+      <div class="screen-view" id="c-detail">
+        <div class="screen-wrapper">
+          <div class="browser-bar pc"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url-bar" style="background:rgba(255,255,255,0.05);">localhost:3001/apply/81da…</span></div>
+          <div>
+            <div class="rf-nav pc"><div class="rf-logo pc"><div class="rf-logo-mark pc"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2L14 6V10L8 14L2 10V6L8 2Z" fill="#05101E"/></svg></div>Resume<span>Forge</span></div><div class="rf-nav-links pc"><div class="rf-nav-link pc">Dashboard</div><div class="rf-nav-link pc">My Resume</div></div><button class="rf-nav-cta pc" style="color:#05101E;"><svg viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>New Application</button></div>
+            <div class="rf-page pc px40">
+              <div class="rf-detail-header pc">
+                <div>
+                  <div class="rf-back pc"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Back</div>
+                  <div class="rf-detail-title pc">TechCorp <span>· Senior Java Developer</span></div>
+                  <div class="rf-ats-inline pc"><div class="rf-ats-score-big pc" style="color:#FBBF24">64</div><div class="rf-ats-bar-wrap pc"><div class="rf-ats-bar-label pc"><span>ATS Score</span><span>/ 100</span></div><div class="rf-ats-bar-track pc"><div class="rf-ats-bar-fill pc" style="width:64%;background:#FBBF24"></div></div></div><div class="rf-ats-advisory pc">Good match. Add <span class="kw" style="background:rgba(248,113,113,0.08);color:#F87171;border-color:rgba(248,113,113,0.15);">senior</span><span class="kw" style="background:rgba(248,113,113,0.08);color:#F87171;border-color:rgba(248,113,113,0.15);">ci/cd</span><span class="kw" style="background:rgba(248,113,113,0.08);color:#F87171;border-color:rgba(248,113,113,0.15);">pipelines</span> to improve.</div></div>
+                </div>
+                <div class="rf-actions pc"><button class="rf-btn-ghost pc">Save edits</button><button class="rf-btn-primary pc" style="color:#05101E;">Export PDF →</button></div>
+              </div>
+              <div class="rf-editor-sections pc">
+                <div class="rf-editor-section pc"><div class="rf-section-head pc"><span class="rf-section-label pc">Professional Summary</span><span class="rf-editable-tag pc">click to edit</span></div><div class="rf-section-body pc"><div class="rf-section-text pc">Experienced Java engineer with 5+ years building distributed systems at scale. Proficient in Spring Boot, Kafka, and PostgreSQL.</div></div></div>
+                <div class="rf-editor-section pc" style="margin-top:2px;"><div class="rf-section-head pc"><span class="rf-section-label pc">Work Experience</span><span class="rf-editable-tag pc">click to edit</span></div><div class="rf-section-body pc"><div class="rf-section-text pc">Senior Software Engineer — Acme Corp (2021–present)
+Led distributed systems using Java, Spring Boot, Kafka.
+Reduced service latency by 40% through architectural improvements.</div></div></div>
+                <div class="rf-editor-section pc" style="margin-top:2px;"><div class="rf-section-head pc"><span class="rf-section-label pc">Skills</span><span class="rf-editable-tag pc">click to edit</span></div><div class="rf-section-body pc"><div class="rf-section-text pc">Java · Spring Boot · Kafka · Docker · Kubernetes · PostgreSQL · Redis · AWS</div></div></div>
+              </div>
+              <div class="rf-breakdown pc"><div class="rf-breakdown-title pc">Score breakdown</div><div class="rf-breakdown-row pc"><span class="rf-brow-label pc">Keywords</span><div class="rf-brow-track pc"><div class="rf-brow-fill pc" style="width:68%;background:#FBBF24"></div></div><span class="rf-brow-val pc">34/50</span></div><div class="rf-breakdown-row pc"><span class="rf-brow-label pc">Sections</span><div class="rf-brow-track pc"><div class="rf-brow-fill pc" style="width:90%;background:#2DD4BF"></div></div><span class="rf-brow-val pc">27/30</span></div><div class="rf-breakdown-row pc"><span class="rf-brow-label pc">Action verbs</span><div class="rf-brow-track pc"><div class="rf-brow-fill pc" style="width:55%;background:#F87171"></div></div><span class="rf-brow-val pc">11/20</span></div></div>
+              <div class="rf-sticky-bar pc"><span class="rf-sticky-hint pc">Unsaved changes</span><div class="rf-actions pc"><button class="rf-btn-ghost pc">Save edits</button><button class="rf-btn-primary pc" style="color:#05101E;">Export PDF →</button></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- NEW -->
+      <div class="screen-view" id="c-new">
+        <div class="screen-wrapper">
+          <div class="browser-bar pc"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url-bar" style="background:rgba(255,255,255,0.05);">localhost:3001/apply/new</span></div>
+          <div>
+            <div class="rf-nav pc"><div class="rf-logo pc"><div class="rf-logo-mark pc"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2L14 6V10L8 14L2 10V6L8 2Z" fill="#05101E"/></svg></div>Resume<span>Forge</span></div><div class="rf-nav-links pc"><div class="rf-nav-link pc">Dashboard</div><div class="rf-nav-link pc">My Resume</div></div><button class="rf-nav-cta pc" style="color:#05101E;"><svg viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>New Application</button></div>
+            <div class="rf-form-page pc"><div style="max-width:540px;margin:0 auto;"><div class="rf-form-header pc"><div class="rf-form-eyebrow pc">New application</div><div class="rf-form-title pc">Tailor your resume</div><div class="rf-form-sub pc">Paste the job description and our AI will optimise your resume for this role.</div></div><div class="rf-field-row pc"><div><label class="rf-label pc">Company name <span class="req">*</span></label><input class="rf-input focused pc" value="Google" readonly /></div><div><label class="rf-label pc">Job title <span class="req">*</span></label><input class="rf-input pc" placeholder="e.g. Staff Engineer" readonly /></div></div><div class="rf-field pc"><label class="rf-label pc">Job description <span class="req">*</span></label><textarea class="rf-textarea pc" readonly>We are looking for a Senior Backend Engineer to join our infrastructure team. You will design and build systems that handle millions of requests per day.
+
+Requirements:
+• 5+ years backend experience
+• Strong proficiency in Java, Go, or Rust
+• Experience with distributed systems</textarea></div><div class="rf-field pc"><label class="rf-label pc">Required skills <span style="font-weight:400;">(optional)</span></label><input class="rf-input pc" placeholder="e.g. Java, Kubernetes, PostgreSQL" readonly /></div><button class="rf-submit pc" style="color:#05101E;">Tailor this resume →</button></div></div>
+          </div>
+        </div>
+      </div>
+      <!-- PROCESSING -->
+      <div class="screen-view" id="c-process">
+        <div class="screen-wrapper">
+          <div class="browser-bar pc"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url-bar" style="background:rgba(255,255,255,0.05);">localhost:3001/apply/new</span></div>
+          <div>
+            <div class="rf-nav pc"><div class="rf-logo pc"><div class="rf-logo-mark pc"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2L14 6V10L8 14L2 10V6L8 2Z" fill="#05101E"/></svg></div>Resume<span>Forge</span></div><div class="rf-nav-links pc"><div class="rf-nav-link pc">Dashboard</div><div class="rf-nav-link pc">My Resume</div></div><button class="rf-nav-cta pc" style="color:#05101E;"><svg viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>New Application</button></div>
+            <div class="rf-processing pc"><div style="width:48px;height:48px;border-radius:10px;background:rgba(45,212,191,0.1);border:1px solid rgba(45,212,191,0.2);display:flex;align-items:center;justify-content:center;"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2L13.5 8H20L14.8 11.8L17 18L11 14.2L5 18L7.2 11.8L2 8H8.5L11 2Z" fill="#2DD4BF" opacity="0.9"/></svg></div><div class="rf-processing-title pc">Working on your <strong style="color:#5EEAD4">Google</strong> application</div><div class="rf-processing-sub pc">This usually takes about 20 seconds.</div><div class="rf-progress-bar-wrap pc"><div class="rf-progress-bar-fill pc" style="background:#2DD4BF;"></div></div><div class="rf-processing-status pc">Matching keywords and rewriting experience section<strong>…</strong></div></div>
+          </div>
+        </div>
+      </div>
+      <!-- RESUME -->
+      <div class="screen-view" id="c-resume">
+        <div class="screen-wrapper">
+          <div class="browser-bar pc"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url-bar" style="background:rgba(255,255,255,0.05);">localhost:3001/resume</span></div>
+          <div>
+            <div class="rf-nav pc"><div class="rf-logo pc"><div class="rf-logo-mark pc"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2L14 6V10L8 14L2 10V6L8 2Z" fill="#05101E"/></svg></div>Resume<span>Forge</span></div><div class="rf-nav-links pc"><div class="rf-nav-link pc">Dashboard</div><div class="rf-nav-link active pc">My Resume</div></div><button class="rf-nav-cta pc" style="color:#05101E;"><svg viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>New Application</button></div>
+            <div class="rf-form-page pc" style="max-width:720px;"><div class="rf-page-title pc" style="margin-bottom:24px;">My Resume</div><div class="rf-tabs pc"><div class="rf-tab active pc">Master resume</div><div class="rf-tab pc">Reference files</div></div><div class="rf-editor-wrap pc"><div class="rf-editor-head pc"><div class="rf-editor-head-label pc">Base resume</div><div class="rf-editor-head-sub pc">Last saved 2 hours ago</div></div><div class="rf-editor-body pc"><div class="rf-editor-text pc">Led distributed systems using Java Spring Boot Kafka. Architected scalable microservices reducing latency by 40%. Deployed containerised apps using Docker and Kubernetes.
+
+Java, Spring Boot, Kafka, Docker, Kubernetes, PostgreSQL, Redis, AWS
+
+B.Tech Computer Science 2019</div></div><div class="rf-editor-footer pc"><span class="rf-char-count pc">354 chars</span><button class="rf-btn-primary pc" style="color:#05101E;">Save resume</button></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="height:80px"></div>
+
+<script>
+function showPalette(id, btn) {
+  document.querySelectorAll('.palette').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sel-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('pal-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function showScreen(palette, screen, btn) {
+  // deactivate all screen views in this palette
+  const container = document.getElementById('pal-' + palette);
+  container.querySelectorAll('.screen-view').forEach(v => v.classList.remove('on'));
+  container.querySelectorAll('.screen-tab').forEach(b => b.classList.remove('on'));
+  // activate target
+  document.getElementById(palette + '-' + screen).classList.add('on');
+  btn.classList.add('on');
+}
+</script>
+</body>
+</html>
