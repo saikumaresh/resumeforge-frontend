@@ -175,6 +175,7 @@ export default function DashboardPage() {
   const [error, setError] = useState("");
 
   const fetchResumes = useCallback(async () => {
+    if (!userId) return; // wait for Zustand hydration — userId is "" on first render
     try {
       const data = await getUserTailoredResumes(userId);
       setResumes(data);
