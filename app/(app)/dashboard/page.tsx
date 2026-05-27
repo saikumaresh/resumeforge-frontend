@@ -250,8 +250,8 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Error */}
-      {error && (
+      {/* Error — only show when there's no data to display */}
+      {error && resumes.length === 0 && (
         <div
           className="flex items-center gap-2.5 p-3.5 rounded-lg"
           style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.15)" }}
