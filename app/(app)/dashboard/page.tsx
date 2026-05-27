@@ -165,6 +165,16 @@ function EmptyState() {
   );
 }
 
+// ── Demo overrides (remove after recording) ──────────────────
+// These make the 4 pending tailoring jobs appear as completed with
+// real-looking ATS scores so the dashboard looks full for the demo.
+const DEMO_OVERRIDES: Record<string, { status: TailoredResume["status"]; atsScore: number }> = {
+  "96db4808-2d56-4181-af0e-8e723bb63ed1": { status: "COMPLETED", atsScore: 87 }, // Google
+  "95a70ca2-0fe1-4965-9f2b-5724915ced42": { status: "COMPLETED", atsScore: 79 }, // Netflix
+  "58a54df6-88f1-4c5e-9a4f-17693cf0c76f": { status: "COMPLETED", atsScore: 74 }, // Airbnb
+  "a8008098-3f21-4ded-928f-db14ce4cb998": { status: "COMPLETED", atsScore: 61 }, // Meta
+};
+
 /* ── Page ───────────────────────────────────────────────────── */
 export default function DashboardPage() {
   const { user } = useAuthStore();
@@ -189,6 +199,11 @@ export default function DashboardPage() {
 
   useEffect(() => { fetchResumes(); }, [fetchResumes]);
 
+  // Apply demo overrides so pending jobs look completed for the walkthrough recording
+  const displayResumes = resumes.map(r =>
+    DEMO_OVERRIDES[r.id] ? { ...r, ...DEMO_OVERRIDES[r.id] } : r
+  );
+
   // Auto-refresh every 8 s while any application is pending/processing
   useEffect(() => {
     const hasPending = resumes.some(r => r.status === "PENDING" || r.status === "PROCESSING");
@@ -197,7 +212,7 @@ export default function DashboardPage() {
     return () => clearInterval(interval);
   }, [resumes, fetchResumes]);
 
-  const completed = resumes.filter((r) => r.status === "COMPLETED");
+  const completed = displayResumes.filter((r) => r.status === "COMPLETED");
   const avgScore =
     completed.length > 0
       ? Math.round(completed.reduce((s, r) => s + (r.atsScore ?? 0), 0) / completed.length)
@@ -219,9 +234,9 @@ export default function DashboardPage() {
           >
             Applications
           </h1>
-          {!loading && resumes.length > 0 && (
+          {!loading && displayResumes.length > 0 && (
             <p className="text-sm text-[#52525B] mt-0.5">
-              {resumes.length} application{resumes.length !== 1 ? "s" : ""}
+              {displayResumes.length} application{displayResumes.length !== 1 ? "s" : ""}
               {avgScore != null && <> · Avg. ATS {avgScore}</>}
               {completed.length > 0 && <> · {completed.length} completed</>}
             </p>
@@ -262,15 +277,15 @@ export default function DashboardPage() {
       )}
 
       {/* Empty state */}
-      {!loading && !error && resumes.length === 0 && <EmptyState />}
+      {!loading && !error && displayResumes.length === 0 && <EmptyState />}
 
       {/* List */}
-      {!loading && resumes.length > 0 && (
+      {!loading && displayResumes.length > 0 && (
         <div
           className="rounded-xl overflow-hidden"
           style={{ border: "1px solid rgba(255,255,255,0.07)" }}
         >
-          {resumes.map((resume, i) => (
+          {displayResumes.map((resume, i) => (
             <ApplicationRow key={resume.id} resume={resume} index={i} />
           ))}
         </div>
